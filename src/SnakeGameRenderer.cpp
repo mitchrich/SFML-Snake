@@ -12,8 +12,7 @@ const sf::Color SnakeGameRenderer::PLAYER_COLOR(245, 66, 129);
 
 SnakeGameRenderer::SnakeGameRenderer(GameAssets& assetHandler) :
     m_assetHandler(assetHandler), m_fruitSprite(createFruitSprite()),
-    m_gridVertices(sf::PrimitiveType::Triangles,
-        SnakeConfig::GRID_DIMENSIONS * SnakeConfig::GRID_DIMENSIONS * 6),
+    m_background(m_assetHandler.background),
     m_eyeSprite(assetHandler.eyes), m_scoreCounter(assetHandler.font)
 {
     auto counterCenter = m_scoreCounter.getLocalBounds().getCenter();
@@ -38,8 +37,6 @@ SnakeGameRenderer::SnakeGameRenderer(GameAssets& assetHandler) :
     m_endSprite.setRadius(PLAYER_WIDTH / 2);
     m_endSprite.setFillColor(PLAYER_COLOR);
     m_endSprite.setOrigin({PLAYER_WIDTH / 2, PLAYER_WIDTH / 2});
-
-    generateGridVertices();
 }
 
 void SnakeGameRenderer::update(const GameState& newGameState)
@@ -59,7 +56,7 @@ void SnakeGameRenderer::update(const GameState& newGameState)
 void SnakeGameRenderer::draw(
     sf::RenderTarget& target, const sf::RenderStates states) const
 {
-    target.draw(m_gridVertices);
+    target.draw(m_background);
     drawFruit(target, states);
     drawPlayer(target, states);
     target.draw(m_scoreCounter);
@@ -82,63 +79,6 @@ void SnakeGameRenderer::drawFruit(
         sprite.setPosition(gridCoordinates(pos));
         window.draw(sprite, states);
     };
-}
-
-void SnakeGameRenderer::generateGridVertices()
-{
-    int square_counter = 0;
-
-    for (int row = 0; row < SnakeConfig::GRID_DIMENSIONS; row++) {
-        std::vector<sf::Vector2f> columnValues;
-        auto                      row_fl = static_cast<float>(row);
-        for (int column = 0; column < SnakeConfig::GRID_DIMENSIONS; column++) {
-            sf::Color square_color;
-            if ((column + row) % 2 == 0) {
-                square_color.r = 163;
-                square_color.g = 201;
-                square_color.b = 173;
-            } else {
-                square_color.r = 122;
-                square_color.g = 163;
-                square_color.b = 133;
-            }
-
-            auto         col_fl = static_cast<float>(column);
-            sf::Vector2f top_left = {
-                col_fl * SnakeConfig::GRID_SIZE, row_fl * SnakeConfig::GRID_SIZE
-            };
-            sf::Vector2f top_right{
-                col_fl * SnakeConfig::GRID_SIZE + SnakeConfig::GRID_SIZE,
-                row_fl * SnakeConfig::GRID_SIZE
-            };
-            sf::Vector2f bottom_left{
-                col_fl * SnakeConfig::GRID_SIZE,
-                row_fl * SnakeConfig::GRID_SIZE + SnakeConfig::GRID_SIZE
-            };
-            sf::Vector2f bottom_right{
-                col_fl * SnakeConfig::GRID_SIZE + SnakeConfig::GRID_SIZE,
-                row_fl * SnakeConfig::GRID_SIZE + SnakeConfig::GRID_SIZE
-            };
-
-            columnValues.push_back(top_left);
-
-            m_gridVertices[square_counter * 6].position = top_left;
-            m_gridVertices[square_counter * 6].color = square_color;
-            m_gridVertices[square_counter * 6 + 1].position = top_right;
-            m_gridVertices[square_counter * 6 + 1].color = square_color;
-            m_gridVertices[square_counter * 6 + 2].position = bottom_right;
-            m_gridVertices[square_counter * 6 + 2].color = square_color;
-
-            m_gridVertices[square_counter * 6 + 3].position = top_left;
-            m_gridVertices[square_counter * 6 + 3].color = square_color;
-            m_gridVertices[square_counter * 6 + 4].position = bottom_right;
-            m_gridVertices[square_counter * 6 + 4].color = square_color;
-            m_gridVertices[square_counter * 6 + 5].position = bottom_left;
-            m_gridVertices[square_counter * 6 + 5].color = square_color;
-
-            square_counter++;
-        }
-    }
 }
 
 sf::Sprite SnakeGameRenderer::createFruitSprite()

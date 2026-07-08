@@ -36,6 +36,7 @@ private:
     void processMenuEvents(std::vector<Button>* buttons);
     void createFruit();
     GameAssets loadGameAssets();
+    sf::Texture generateBackgroundGrid();
     void tryLoadFont(sf::Font& out, string filename);
     void tryLoadTexture(sf::Texture& out, string filename);
 };

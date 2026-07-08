@@ -33,7 +33,7 @@ class SnakeGameRenderer final : public sf::Drawable {
     ////Other Methods
     //
     sf::Vector2f getHeadCenter(sf::Vector2i headPos) const;
-    sf::Sprite createFruitSprite();
+    sf::Sprite   createFruitSprite();
 
     ////Sprite Generation Methods
     //
@@ -42,7 +42,6 @@ class SnakeGameRenderer final : public sf::Drawable {
     void addVertices(const std::vector<sf::Vector2f>& points);
     std::vector<sf::Vector2f> generateCircleVertices(sf::Vector2i initialPos,
         Direction initialDirection, Direction finalDirection) const;
-    void                      generateGridVertices();
     void                      updateTail(std::deque<BodyPos> bodyPositions);
 
     ////Draw Methods
@@ -54,13 +53,13 @@ class SnakeGameRenderer final : public sf::Drawable {
 
     ////General
     //
-    GameAssets& m_assetHandler;
+    GameAssets&               m_assetHandler;
     std::vector<sf::Vector2i> m_fruitPos;
-    const sf::Sprite      m_fruitSprite;
+    const sf::Sprite          m_fruitSprite;
+    const sf::Sprite m_background;
 
     ////Sprites
     //
-    sf::VertexArray m_gridVertices;
     sf::VertexArray m_tailStrip;
     sf::CircleShape m_headSprite;
     sf::CircleShape m_endSprite;

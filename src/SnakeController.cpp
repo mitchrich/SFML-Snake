@@ -1,7 +1,9 @@
 #include "SnakeController.hpp"
 #include "Button.hpp"
 #include "GameAsset.hpp"
+#include "SFML/Graphics/RenderTexture.hpp"
 #include "SFML/Graphics/Texture.hpp"
+#include "SFML/Graphics/VertexArray.hpp"
 #include "Screen.hpp"
 #include "SnakeConfig.hpp"
 #include "SnakeGameRenderer.hpp"
@@ -13,6 +15,71 @@
 #include <string>
 #include <vector>
 
+sf::Texture SnakeController::generateBackgroundGrid() {
+    sf::VertexArray gridVertices(sf::PrimitiveType::Triangles,
+        SnakeConfig::GRID_DIMENSIONS * SnakeConfig::GRID_DIMENSIONS * 6);
+    int square_counter = 0;
+
+    for (int row = 0; row < SnakeConfig::GRID_DIMENSIONS; row++) {
+        std::vector<sf::Vector2f> columnValues;
+        auto                      row_fl = static_cast<float>(row);
+        for (int column = 0; column < SnakeConfig::GRID_DIMENSIONS; column++) {
+            sf::Color square_color;
+            if ((column + row) % 2 == 0) {
+                square_color.r = 163;
+                square_color.g = 201;
+                square_color.b = 173;
+            } else {
+                square_color.r = 122;
+                square_color.g = 163;
+                square_color.b = 133;
+            }
+
+            auto         col_fl = static_cast<float>(column);
+            sf::Vector2f top_left = {
+                col_fl * SnakeConfig::GRID_SIZE, row_fl * SnakeConfig::GRID_SIZE
+            };
+            sf::Vector2f top_right{
+                col_fl * SnakeConfig::GRID_SIZE + SnakeConfig::GRID_SIZE,
+                row_fl * SnakeConfig::GRID_SIZE
+            };
+            sf::Vector2f bottom_left{
+                col_fl * SnakeConfig::GRID_SIZE,
+                row_fl * SnakeConfig::GRID_SIZE + SnakeConfig::GRID_SIZE
+            };
+            sf::Vector2f bottom_right{
+                col_fl * SnakeConfig::GRID_SIZE + SnakeConfig::GRID_SIZE,
+                row_fl * SnakeConfig::GRID_SIZE + SnakeConfig::GRID_SIZE
+            };
+
+            columnValues.push_back(top_left);
+
+            gridVertices[square_counter * 6].position = top_left;
+            gridVertices[square_counter * 6].color = square_color;
+            gridVertices[square_counter * 6 + 1].position = top_right;
+            gridVertices[square_counter * 6 + 1].color = square_color;
+            gridVertices[square_counter * 6 + 2].position = bottom_right;
+            gridVertices[square_counter * 6 + 2].color = square_color;
+
+            gridVertices[square_counter * 6 + 3].position = top_left;
+            gridVertices[square_counter * 6 + 3].color = square_color;
+            gridVertices[square_counter * 6 + 4].position = bottom_right;
+            gridVertices[square_counter * 6 + 4].color = square_color;
+            gridVertices[square_counter * 6 + 5].position = bottom_left;
+            gridVertices[square_counter * 6 + 5].color = square_color;
+
+            square_counter++;
+        }
+    }
+
+    sf::RenderTexture rendertex(SnakeConfig::WINDOW_DIMENSIONS);
+    rendertex.draw(gridVertices);
+    rendertex.display();
+    
+    sf::Texture texture = rendertex.getTexture();
+    return texture;
+}
+
 GameAssets SnakeController::loadGameAssets()
 {
     GameAssets assets;
@@ -21,6 +88,7 @@ GameAssets SnakeController::loadGameAssets()
     tryLoadTexture(assets.apple_texture, "assets/apple.png");
     tryLoadTexture(assets.gameover_logo, "assets/gameover.png");
     tryLoadTexture(assets.main_logo, "assets/logo.png");
+    assets.background = generateBackgroundGrid();
 
     return assets;
 }
@@ -163,26 +231,28 @@ void SnakeController::playSnake()
         if (m_model.getFruitList().size() == 0) { createFruit(); }
 
         m_timer.restart();
+
+        SnakeGameRenderer::GameState newGameState = {
+            m_model.getPlayer().getBodyPositions(),
+            m_model.getPlayer().getPosition(),
+            m_model.getPlayer().getMoveDirection(),
+            m_model.getScore(),
+            m_model.getFruitList()
+        };
+
+        if (hasLost()) {
+            m_gameState = GameMode::OVER;
+            m_endScreen.setSubtext("Score: " + std::to_string(m_model.getScore()));
+        } else if (m_model.getPlayer().getLength() ==
+                   SnakeConfig::AVAILIABLE_SQUARES) {
+            m_gameState = GameMode::OVER;
+            m_endScreen.setSubtext("You Won!");
+        } else {
+            m_renderer.update(newGameState);
+        }
     }
 
-    SnakeGameRenderer::GameState newGameState = {
-        m_model.getPlayer().getBodyPositions(),
-        m_model.getPlayer().getPosition(),
-        m_model.getPlayer().getMoveDirection(),
-        m_model.getScore(),
-        m_model.getFruitList()
-    };
 
-    if (hasLost()) {
-        m_gameState = GameMode::OVER;
-        m_endScreen.setSubtext("Score: " + std::to_string(m_model.getScore()));
-    } else if (m_model.getPlayer().getLength() ==
-               SnakeConfig::AVAILIABLE_SQUARES) {
-        m_gameState = GameMode::OVER;
-        m_endScreen.setSubtext("You Won!");
-    } else {
-        m_renderer.update(newGameState);
-    }
 }
 
 void SnakeController::createFruit()

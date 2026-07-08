@@ -13,5 +13,6 @@ struct GameAssets {
     sf::Texture apple_texture;
     sf::Texture gameover_logo;
     sf::Texture main_logo;
+    sf::Texture background;
 };
 
