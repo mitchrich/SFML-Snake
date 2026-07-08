@@ -1,4 +1,4 @@
-project('SFML-Snake', 'cpp')
+project('SFML-Snake', 'cpp', default_options: ['cpp_std=c++23'])
 
 src = [
   'src/main.cpp',
@@ -17,4 +17,8 @@ sfml_dep = dependency('sfml', default_options: [
 ])
 
 incdir = include_directories('include')
-executable('snake', src, include_directories: incdir, dependencies: sfml_dep)
+
+executable('snake', src,
+  dependencies: [sfml_dep],
+  include_directories: [incdir],
+)

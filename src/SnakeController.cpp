@@ -1,6 +1,6 @@
 #include "SnakeController.hpp"
-#include "GameAsset.hpp"
 #include "Button.hpp"
+#include "GameAsset.hpp"
 #include "SFML/Graphics/Texture.hpp"
 #include "Screen.hpp"
 #include "SnakeConfig.hpp"
@@ -13,7 +13,8 @@
 #include <string>
 #include <vector>
 
-GameAssets SnakeController::loadGameAssets() {
+GameAssets SnakeController::loadGameAssets()
+{
     GameAssets assets;
     tryLoadFont(assets.font, "assets/ui-font.ttf");
     tryLoadTexture(assets.eyes, "assets/eyes.png");
@@ -24,13 +25,15 @@ GameAssets SnakeController::loadGameAssets() {
     return assets;
 }
 
-void SnakeController::tryLoadFont(sf::Font& out, string filename) {
+void SnakeController::tryLoadFont(sf::Font& out, string filename)
+{
     if (!out.openFromFile(filename)) {
         throw std::runtime_error("Asset not found: " + filename);
     }
 }
 
-void SnakeController::tryLoadTexture(sf::Texture& out, string filename) {
+void SnakeController::tryLoadTexture(sf::Texture& out, string filename)
+{
     if (!out.loadFromFile(filename)) {
         throw std::runtime_error("Asset not found: " + filename);
     }
@@ -44,26 +47,29 @@ SnakeController::SnakeController() :
     m_endScreen(m_assets.font, m_assets.gameover_logo, ""),
     m_startScreen(m_assets.font, m_assets.main_logo, "")
 {
-    m_window.setVerticalSyncEnabled(true);
+    // m_window.setVerticalSyncEnabled(true);
     m_window.setKeyRepeatEnabled(false);
 
     sf::View gridView(sf::FloatRect({0, 0}, {800, 800}));
     m_window.setView(gridView);
 
-    Button playButton(SnakeConfig::BUTTON_1_POS, "PLAY AGAIN",
-        m_assets.font, [this]() {
+    Button playButton(
+        SnakeConfig::BUTTON_1_POS, "PLAY AGAIN", m_assets.font, [this]() {
             m_model = SnakeModel();
             m_gameState = GameMode::GAME;
+            m_renderer.update(
+                {m_model.getPlayer().getBodyPositions(),
+                    m_model.getPlayer().getPosition(),
+                    m_model.getPlayer().getMoveDirection(),
+                    m_model.getScore()});
         });
     m_endScreen.addButton(playButton);
 
-    Button startButton(SnakeConfig::BUTTON_1_POS, "START",
-        m_assets.font,
+    Button startButton(SnakeConfig::BUTTON_1_POS, "START", m_assets.font,
         [this]() { m_gameState = GameMode::GAME; });
     m_startScreen.addButton(startButton);
 
-    Button quitButton(SnakeConfig::BUTTON_2_POS, "QUIT",
-        m_assets.font,
+    Button quitButton(SnakeConfig::BUTTON_2_POS, "QUIT", m_assets.font,
         [this]() { m_window.close(); });
     m_endScreen.addButton(quitButton);
     m_startScreen.addButton(quitButton);
@@ -82,7 +88,7 @@ bool SnakeController::hasLost()
     if (colliding) return true;
 
     sf::Vector2i corner = {
-        SnakeConfig::GRID_DIMENSIONS.x - 1, SnakeConfig::GRID_DIMENSIONS.y - 1
+        SnakeConfig::GRID_DIMENSIONS - 1, SnakeConfig::GRID_DIMENSIONS - 1
     };
     if (!pointInRect(headpos, {0, 0}, corner)) return true;
 
@@ -188,8 +194,8 @@ void SnakeController::createFruit()
         m_model.getPlayer().getLength() + m_model.getFruitList().size() - 1;
     if (filledSquares < SnakeConfig::AVAILIABLE_SQUARES) {
         sf::Vector2i position{
-            rand() % SnakeConfig::GRID_DIMENSIONS.x,
-            rand() % SnakeConfig::GRID_DIMENSIONS.y
+            rand() % SnakeConfig::GRID_DIMENSIONS,
+            rand() % SnakeConfig::GRID_DIMENSIONS
         };
 
         auto bodypositions = m_model.getPlayer().getBodyPositions();
@@ -203,8 +209,8 @@ void SnakeController::createFruit()
                        return segment.position == position;
                    })) {
             position = {
-                rand() % SnakeConfig::GRID_DIMENSIONS.x,
-                rand() % SnakeConfig::GRID_DIMENSIONS.y
+                rand() % SnakeConfig::GRID_DIMENSIONS,
+                rand() % SnakeConfig::GRID_DIMENSIONS
             };
         }
 
