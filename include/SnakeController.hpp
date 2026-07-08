@@ -35,7 +35,6 @@ private:
     void processGameEvents();
     void processMenuEvents(std::vector<Button>* buttons);
     void createFruit();
-    void destroyFruit(int index);
     GameAssets loadGameAssets();
     void tryLoadFont(sf::Font& out, string filename);
     void tryLoadTexture(sf::Texture& out, string filename);

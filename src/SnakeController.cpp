@@ -139,12 +139,6 @@ void SnakeController::processMenuEvents(std::vector<Button>* buttons)
     }
 }
 
-void SnakeController::destroyFruit(int index)
-{
-    m_model.destroyFruitIndex(index);
-    m_renderer.destroyFruitSprite(index);
-}
-
 void SnakeController::playSnake()
 {
     processGameEvents();
@@ -158,7 +152,8 @@ void SnakeController::playSnake()
             if (m_model.getPlayer().getPosition() ==
                 m_model.getFruitList().at(i)) {
                 m_model.getPlayer().incrementLength();
-                destroyFruit(i);
+                m_model.destroyFruitIndex(i);
+
                 for (int i = 0; i < rand() % 3; i++) {
                     createFruit();
                 }
@@ -173,7 +168,9 @@ void SnakeController::playSnake()
     SnakeGameRenderer::GameState newGameState = {
         m_model.getPlayer().getBodyPositions(),
         m_model.getPlayer().getPosition(),
-        m_model.getPlayer().getMoveDirection(), m_model.getScore()
+        m_model.getPlayer().getMoveDirection(),
+        m_model.getScore(),
+        m_model.getFruitList()
     };
 
     if (hasLost()) {
@@ -215,7 +212,6 @@ void SnakeController::createFruit()
         }
 
         m_model.createFruit(position);
-        m_renderer.createFruitSprite(position);
     }
 }
 

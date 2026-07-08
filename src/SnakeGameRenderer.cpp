@@ -1,5 +1,6 @@
 #include "SnakeGameRenderer.hpp"
 #include "GameAsset.hpp"
+#include "SFML/Graphics/Sprite.hpp"
 #include "SnakeConfig.hpp"
 #include "utility.hpp"
 #include <SFML/Graphics.hpp>
@@ -10,10 +11,10 @@
 const sf::Color SnakeGameRenderer::PLAYER_COLOR(245, 66, 129);
 
 SnakeGameRenderer::SnakeGameRenderer(GameAssets& assetHandler) :
-    m_assetHandler(assetHandler), m_scoreCounter(assetHandler.font),
+    m_assetHandler(assetHandler), m_fruitSprite(createFruitSprite()),
     m_gridVertices(sf::PrimitiveType::Triangles,
         SnakeConfig::GRID_DIMENSIONS * SnakeConfig::GRID_DIMENSIONS * 6),
-    m_eyeSprite(assetHandler.eyes)
+    m_eyeSprite(assetHandler.eyes), m_scoreCounter(assetHandler.font)
 {
     auto counterCenter = m_scoreCounter.getLocalBounds().getCenter();
     m_scoreCounter.setOrigin(counterCenter);
@@ -50,6 +51,7 @@ void SnakeGameRenderer::update(const GameState& newGameState)
     m_scoreCounter.setString("Score: " + std::to_string(newGameState.score));
     auto counterCenter = m_scoreCounter.getLocalBounds().getCenter();
     m_scoreCounter.setOrigin(counterCenter);
+    m_fruitPos = newGameState.fruitPos;
 
     updateTail(newGameState.segmentPositions);
 }
@@ -75,8 +77,10 @@ void SnakeGameRenderer::drawPlayer(
 void SnakeGameRenderer::drawFruit(
     sf::RenderTarget& window, const sf::RenderStates& states) const
 {
-    for (const sf::Sprite& fruit : m_fruitSpriteList) {
-        window.draw(fruit, states);
+    auto sprite = m_fruitSprite;
+    for (sf::Vector2i pos : m_fruitPos) {
+        sprite.setPosition(gridCoordinates(pos));
+        window.draw(sprite, states);
     };
 }
 
@@ -137,10 +141,9 @@ void SnakeGameRenderer::generateGridVertices()
     }
 }
 
-void SnakeGameRenderer::createFruitSprite(sf::Vector2i position)
+sf::Sprite SnakeGameRenderer::createFruitSprite()
 {
-    sf::Sprite sprite(m_assetHandler.apple_texture);
-    sprite.setPosition(gridCoordinates(position));
+    sf::Sprite   sprite(m_assetHandler.apple_texture);
     sf::Vector2f scale = {
         SnakeConfig::GRID_SIZE /
             static_cast<float>(sprite.getTexture().getSize().x),
@@ -148,11 +151,8 @@ void SnakeGameRenderer::createFruitSprite(sf::Vector2i position)
             static_cast<float>(sprite.getTexture().getSize().y)
     };
     sprite.scale(scale);
-    m_fruitSpriteList.push_back(sprite);
+    return sprite;
 }
-
-void SnakeGameRenderer::destroyFruitSprite(int index)
-{ m_fruitSpriteList.erase(m_fruitSpriteList.begin() + index); }
 
 std::vector<sf::Vector2f> SnakeGameRenderer::calcWidthVertex(
     sf::Vector2f position, sf::Angle angle) const
