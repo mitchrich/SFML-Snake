@@ -4,7 +4,6 @@ src = [
   'src/main.cpp',
   'src/utility.cpp',
   'src/Button.cpp',
-  'src/AssetHandler.cpp',
   'src/Player.cpp',
   'src/SnakeGameRenderer.cpp',
   'src/Screen.cpp',

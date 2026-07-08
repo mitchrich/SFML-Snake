@@ -1,0 +1,23 @@
+IndentWidth: 4
+ColumnLimit: 80
+BreakBeforeBraces: WebKit
+
+Language: Cpp
+AlignAfterOpenBracket: false
+EnumTrailingComma: Insert
+
+BreakAfterOpenBracketBracedList: true
+BreakBeforeCloseBracketBracedList: true
+
+BreakConstructorInitializers: AfterColon
+PointerAlignment: Left
+
+# Align Consecutive
+AlignConsecutiveMacros: Consecutive
+AlignConsecutiveDeclarations: Consecutive
+
+# Allow inlining
+AllowShortBlocksOnASingleLine: true
+AllowShortCaseExpressionOnASingleLine: true
+AllowShortEnumsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: WithoutElse

@@ -3,20 +3,19 @@
 #include <cmath>
 #include <deque>
 #include "SnakeGameRenderer.hpp"
-#include "AssetHandler.hpp"
+#include "GameAsset.hpp"
 #include "utility.hpp"
 #include "SnakeConfig.hpp"
 
 const sf::Color SnakeGameRenderer::PLAYER_COLOR(245, 66, 129);
 
-SnakeGameRenderer::SnakeGameRenderer(sf::RenderWindow* window, AssetHandler* assetHandler) :
+SnakeGameRenderer::SnakeGameRenderer(GameAssets& assetHandler) :
         m_assetHandler(assetHandler),
-        m_window(window),
-        m_scoreCounter(*assetHandler->getFont("ui-font.ttf")),
-        m_eyeSprite(*assetHandler->getTexture("eyes.png")),
+        m_scoreCounter(assetHandler.font),
         m_gridVertices(
             sf::PrimitiveType::Triangles,
-            SnakeConfig::GRID_DIMENSIONS.x * SnakeConfig::GRID_DIMENSIONS.y * 6)
+            SnakeConfig::GRID_DIMENSIONS.x * SnakeConfig::GRID_DIMENSIONS.y * 6),
+        m_eyeSprite(assetHandler.eyes)
 {
     auto counterCenter = m_scoreCounter.getLocalBounds().getCenter();
     m_scoreCounter.setOrigin(counterCenter);
@@ -128,7 +127,7 @@ void SnakeGameRenderer::generateGridVertices()
 }
 
 void SnakeGameRenderer::createFruitSprite(sf::Vector2i position) {
-    sf::Sprite sprite(*m_assetHandler->getTexture("apple.png"));
+    sf::Sprite sprite(m_assetHandler.apple_texture);
     sprite.setPosition(gridCoordinates(position));
     sf::Vector2f scale = {
         SnakeConfig::GRID_SIZE/static_cast<float>(sprite.getTexture().getSize().x),

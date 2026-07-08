@@ -11,7 +11,7 @@
 class Button final : public sf::Drawable
 {
 public:
-    Button(sf::Vector2f position, std::string text, sf::Font* font, std::function<void()> function);
+    Button(sf::Vector2f position, std::string text, sf::Font& font, std::function<void()> function);
     void handleMouseClick(sf::Vector2f mousePos) const;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 private:

@@ -1,13 +1,13 @@
 #include "Screen.hpp"
-#include "AssetHandler.hpp"
 #include "Button.hpp"
+#include "SFML/Graphics/Font.hpp"
 #include "SnakeConfig.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector2.hpp>
 
-Screen::Screen(AssetHandler* assetHandler, sf::Texture* logo, std::string subtext) :
-    m_logo(*logo),
-    m_subtext(*assetHandler->getFont("ui-font.ttf"), subtext)
+Screen::Screen(sf::Font& font, sf::Texture& logo, std::string subtext) :
+    m_logo(logo),
+    m_subtext(font, subtext)
 {
     auto logoCenter = m_logo.getLocalBounds().getCenter();
     m_logo.setOrigin(logoCenter);

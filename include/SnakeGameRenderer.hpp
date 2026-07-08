@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AssetHandler.hpp"
+#include "GameAsset.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <deque>
@@ -16,7 +16,7 @@ class SnakeGameRenderer final : public sf::Drawable {
             int score;
         };
         
-        SnakeGameRenderer(sf::RenderWindow* window, AssetHandler* assetHandler);
+        SnakeGameRenderer(GameAssets& assetHandler);
         void update(const GameState& newGameState);
         void draw(sf::RenderTarget& target, const sf::RenderStates states) const;
         void createFruitSprite(sf::Vector2i position);
@@ -50,8 +50,7 @@ class SnakeGameRenderer final : public sf::Drawable {
         
         ////General
         //
-        sf::RenderWindow* m_window;
-        AssetHandler* m_assetHandler;
+        GameAssets& m_assetHandler;
 
         ////Sprites
         //

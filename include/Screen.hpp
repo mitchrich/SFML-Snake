@@ -2,12 +2,12 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include "AssetHandler.hpp"
 #include "Button.hpp"
+#include "SFML/Graphics/Font.hpp"
 
-class Screen final : public sf::Drawable {
+class Screen : public sf::Drawable {
     public:
-        Screen(AssetHandler* assetHandler, sf::Texture* logo, std::string subtext);
+        Screen(sf::Font& font, sf::Texture& logo, std::string subtext);
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
         void addButton(Button button);
         void setSubtext(std::string newText);

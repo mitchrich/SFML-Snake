@@ -4,10 +4,12 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <queue>
 #include <vector>
+#include "SFML/Graphics/Texture.hpp"
 #include "SnakeModel.hpp"
 #include "Button.hpp"
 #include "SnakeGameRenderer.hpp"
 #include "Screen.hpp"
+#include "GameAsset.hpp"
 
 class SnakeController
 {
@@ -18,7 +20,7 @@ public:
     void playGame();
 
 private:
-    AssetHandler m_textureHandler;
+    GameAssets m_assets;
     SnakeModel m_model;
     std::queue<Direction> m_inputBuffer;
     sf::RenderWindow m_window;
@@ -27,10 +29,14 @@ private:
     Screen m_endScreen;
     Screen m_startScreen;
     GameMode m_gameState = GameMode::START;
+
     void addMoveToBuffer(Direction move);
     std::optional<Direction> getNextDirection();
     void processGameEvents();
     void processMenuEvents(std::vector<Button>* buttons);
     void createFruit();
     void destroyFruit(int index);
+    GameAssets loadGameAssets();
+    void tryLoadFont(sf::Font& out, string filename);
+    void tryLoadTexture(sf::Texture& out, string filename);
 };

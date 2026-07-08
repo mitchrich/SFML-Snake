@@ -5,9 +5,9 @@ Button::Button
 (
     sf::Vector2f position,
     std::string text,
-    sf::Font* font,
+    sf::Font& font,
     std::function<void()> function)
-: m_function(function), m_text(*font)
+: m_text(font), m_function(function)
 {
     m_text.setString(text);
     m_text.setPosition(position);
