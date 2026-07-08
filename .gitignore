@@ -32,6 +32,11 @@
 *.app
 
 /builddir/
+
 /subprojects/*
 !/subprojects/*.wrap
 !/subprojects/packagefiles/
+
+perf.*
+compile_commands.json
+snake
